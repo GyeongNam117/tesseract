@@ -1,0 +1,20 @@
+from pdf2image import convert_from_path
+import pytesseract
+from docx import Document
+
+# PDF → 이미지
+images = convert_from_path("20250403_SHRM_5주차_공지용.pdf", dpi=300)
+
+# OCR로 텍스트 추출
+doc = Document()
+doc.add_heading("SHRM 5주차 오픈북 전공시험 대비 정리본 (OCR 기반)", 0)
+
+for i, img in enumerate(images):
+    text = pytesseract.image_to_string(img, lang="kor+eng")
+    doc.add_heading(f"[슬라이드 {i+1}]", level=2)
+    for line in text.split("\n"):
+        if line.strip():
+            doc.add_paragraph(line.strip())
+
+# 워드 저장
+doc.save("SHRM_5주차_OCR_완전정리본.docx")
